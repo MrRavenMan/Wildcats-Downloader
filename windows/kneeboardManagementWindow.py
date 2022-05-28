@@ -5,6 +5,7 @@ from tkinter import ttk, filedialog
 
 import os
 import json
+from turtle import width
 import requests
 import time
 
@@ -30,7 +31,9 @@ class KneeboardManagementWindow(tk.Frame):
             with open(self.kneeboards_json_path, 'r') as f:
                 self.kneeboards = json.load(f)
 
-        tk.Label(self.scrollFrame.viewPort, text="Manage Kneeboards").pack()
+        title = tk.Label(self.scrollFrame.viewPort, text="Manage Kneeboards", fg='#FF9A00', bg='#202020')
+        title.config(font=('TkTextFont', 25))
+        title.pack(pady=(20, 20))
 
         frame.place_forget()
         self.t_frames = []
@@ -52,8 +55,10 @@ class KneeboardManagementWindow(tk.Frame):
             t = ToggledFrame(self.scrollFrame.viewPort, text=category["name"], relief="raised", borderwidth=1)
 
             for subcategory in category["subcat"]:
-                tk.Label(t.sub_frame, text=subcategory["name"]).pack()
-                tk.Label(t.sub_frame, text=subcategory["description"]).pack()
+                s_title = tk.Label(t.sub_frame, text=subcategory["name"])
+                s_title.config(font=('TkTextFont', 12))
+                s_title.pack(pady=(12, 0))
+                tk.Label(t.sub_frame, text=subcategory["description"]).pack(pady=5)
                 address = (category["name"], subcategory["name"])
                 if subcategory["default"]:
                     tk.Button(t.sub_frame, text="Enabled",
@@ -64,26 +69,25 @@ class KneeboardManagementWindow(tk.Frame):
                     command=lambda address=address: self.toggleGroup(address, root, frame, setup_data),
                     bg="red").pack()
 
-                ttk.Label(t.sub_frame, text="Files: ").pack()
+                ttk.Label(t.sub_frame, text="Files: ").pack(pady=(10, 0))
                 listBox = tk.Listbox(t.sub_frame, width=60, height=len(subcategory["files"]) + 1)
                 for i, file in enumerate(subcategory["files"]):
                     listBox.insert(i + 1, file)
-                listBox.pack()
+                listBox.pack(pady=(0, 5))
 
                 tk.Button(t.sub_frame, text="selectFiles",
                     command=lambda address=address: self.selectFiles(address, root, frame, setup_data),
-                    bg="gray").pack()
+                    bg="gray").pack(pady=5)
                 tk.Button(t.sub_frame, text="Delete",
                     command=lambda address=address: self.deleteSubcat(address, root, frame, setup_data),
-                    bg="red").pack()
+                    bg="red").pack(pady=15)
 
-
-                ttk.Label(t.sub_frame, text="").pack()
+                ttk.Separator(t.sub_frame, orient='horizontal').pack(fill='x')
                 t.sub_frame.place()
 
             tk.Button(t, text="Delete Category",
                 command=lambda address=address: self.deleteCategory(category["name"], root, frame, setup_data),
-                bg="red").pack()
+                bg="red").pack(pady=7)
 
             self.t_frames.append(t) # Add subcategories
 
@@ -96,10 +100,10 @@ class KneeboardManagementWindow(tk.Frame):
         self.editBtn = tk.Button(self.scrollFrame.viewPort, text="Edit", command=lambda: os.system(f"notepad.exe {self.kneeboards_json_path}"), bg="Gray")
 
     def place_btns(self):
-        self.backBtn.pack()
-        self.downloadBtn.pack()
-        self.editLbl.pack()
-        self.editBtn.pack()
+        self.backBtn.pack(pady=(10, 5))
+        self.downloadBtn.pack(pady=(3, 5))
+        self.editLbl.pack(pady=(5, 1))
+        self.editBtn.pack(pady=(0, 10))
     
     def delete_btns(self):
         self.backBtn.destroy()
@@ -109,7 +113,7 @@ class KneeboardManagementWindow(tk.Frame):
 
     def place_t_frames(self):
         for t in self.t_frames:
-            t.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
+            t.pack(fill="x", expand=1, pady=7, padx=40, anchor="n")
 
     def delete_t_frames(self):
         for t in self.t_frames:
@@ -179,6 +183,7 @@ class KneeboardManagementWindow(tk.Frame):
     def refresh(self, root, frame, setup_data):
         self.delete_t_frames()
         self.delete_btns()
+        
         self.generate_categories(root, frame, setup_data)
         self.place_t_frames()
         self.generate_btns(frame)

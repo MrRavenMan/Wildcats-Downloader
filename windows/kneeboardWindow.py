@@ -33,7 +33,9 @@ class KneeboardWindow(tk.Frame):
         with open('kneeboards.json', 'w') as f: # Save kneeboards.json locally
             f.write(json.dumps(self.kneeboards, indent=4))
 
-        tk.Label(self.scrollFrame.viewPort, text="Kneeboards").pack()
+        title = tk.Label(self.scrollFrame.viewPort, text="Kneeboards", fg='white', bg='#202020')
+        title.config(font=('TkTextFont', 25))
+        title.pack(pady=(20, 20))
 
         frame.place_forget()
         self.t_frames = []
@@ -53,8 +55,10 @@ class KneeboardWindow(tk.Frame):
             t = ToggledFrame(self.scrollFrame.viewPort, text=category["name"], relief="raised", borderwidth=1)
 
             for subcategory in category["subcat"]:
-                tk.Label(t.sub_frame, text=subcategory["name"]).pack()
-                tk.Label(t.sub_frame, text=subcategory["description"]).pack()
+                s_title = tk.Label(t.sub_frame, text=subcategory["name"])
+                s_title.config(font=('TkTextFont', 12))
+                s_title.pack(pady=(12, 0))
+                tk.Label(t.sub_frame, text=subcategory["description"]).pack(pady=7)
                 address = (category["name"], subcategory["name"])
                 if subcategory["default"]:
                     tk.Button(t.sub_frame, text="Enabled",
@@ -64,7 +68,8 @@ class KneeboardWindow(tk.Frame):
                     tk.Button(t.sub_frame, text="Disabled",
                     command=lambda address=address: self.toggleGroup(address, root, frame, setup_data),
                     bg="red").pack()
-                ttk.Label(t.sub_frame, text="").pack()
+                
+                ttk.Separator(t.sub_frame, orient='horizontal').pack(fill='x', pady=(10, 5))
                 t.sub_frame.place()
             
             self.t_frames.append(t)
@@ -74,16 +79,16 @@ class KneeboardWindow(tk.Frame):
         self.downloadBtn = tk.Button(self.scrollFrame.viewPort, text="Download", command=self.download, bg="blue")
 
     def place_btns(self):
-        self.backBtn.pack()
-        self.downloadBtn.pack()
-    
+        self.downloadBtn.pack(pady=(10, 5))
+        self.backBtn.pack(pady=(10, 5))
+
     def delete_btns(self):
         self.backBtn.destroy()
         self.downloadBtn.destroy()
             
     def place_t_frames(self):
         for t in self.t_frames:
-            t.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
+            t.pack(fill="x", expand=1, pady=7, padx=40, anchor="n")
 
     def delete_t_frames(self):
         for t in self.t_frames:

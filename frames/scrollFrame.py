@@ -5,8 +5,8 @@ class ScrollFrame(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent) # create a frame (self)
 
-        self.canvas = tk.Canvas(self, borderwidth=0, height=800, width=800, bg="#263D42")          #place canvas on self
-        self.viewPort = tk.Frame(self.canvas, bg="#263D42")                    #place a frame on the canvas, this frame will hold the child widgets 
+        self.canvas = tk.Canvas(self, borderwidth=0, height=800, width=800, bg="#202020")          #place canvas on self
+        self.viewPort = tk.Frame(self.canvas, bg="#202020")                    #place a frame on the canvas, this frame will hold the child widgets 
         self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview) #place a scrollbar on self 
         self.canvas.configure(yscrollcommand=self.vsb.set)                          #attach scrollbar action to scroll of canvas
 

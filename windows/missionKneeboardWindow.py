@@ -21,7 +21,9 @@ class MissionKneeboardWindow(tk.Frame):
         response = requests.get(paths_url).text
         self.event_flights = json.loads(response)
 
-        tk.Label(self.scrollFrame.viewPort, text="Mission Kneeboards").pack()
+        title = tk.Label(self.scrollFrame.viewPort, text="Mission Kneeboards", fg='white', bg='#202020')
+        title.config(font=('TkTextFont', 25))
+        title.pack(pady=(20, 20))
 
         frame.place_forget()
         self.t_frames = []
@@ -40,12 +42,17 @@ class MissionKneeboardWindow(tk.Frame):
             t = ToggledFrame(self.scrollFrame.viewPort, text=squadron["name"], relief="raised", borderwidth=1)
 
             for flight in squadron["flights"]:
-                tk.Label(t.sub_frame, text=flight["flight_name"]).pack()
+                s_title = tk.Label(t.sub_frame, text=flight["flight_name"])
+                s_title.config(font=('TkTextFont', 12))
+                s_title.pack(pady=(10, 0))
+                
+                flight_name = flight["flight_name"]
                 tk.Button(t.sub_frame, text="Download",
-                command=lambda: self.download(flight["flight_name"]),
-                bg="blue").pack()
+                command=lambda flight_name=flight_name: self.download(flight_name),
+                bg="blue").pack(pady=5)
 
                 ttk.Label(t.sub_frame, text="").pack()
+                ttk.Separator(t.sub_frame, orient='horizontal').pack(fill='x', pady=(5, 5))
                 t.sub_frame.place()
             
             self.t_frames.append(t)
@@ -54,27 +61,14 @@ class MissionKneeboardWindow(tk.Frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
 
     def place_btns(self):
-        self.backBtn.pack()
+        self.backBtn.pack(pady=(10, 5))
     
     def delete_btns(self):
         self.backBtn.destroy()
             
     def place_t_frames(self):
         for t in self.t_frames:
-            t.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
-
-    def toggleGroup(self, address, root, frame, setup_data):
-        category_name, subcategory_name = address
-        for i, cat in enumerate(self.kneeboards):
-            if cat["name"] == category_name:
-                for x, subcat in enumerate(cat["subcat"]):
-                    if subcat["name"] == subcategory_name:
-                        self.kneeboards[i]["subcat"][x]["default"] = not self.kneeboards[i]["subcat"][x]["default"]
-                        with open('kneeboards.json', 'w') as f:
-                            f.write(json.dumps(self.kneeboards, indent=4))
-                        break
-                    
-        self.refresh(root, frame, setup_data)
+            t.pack(fill="x", expand=1, pady=7, padx=40, anchor="n")
 
     def download(self, flight):
         downloadMissionKneeboards(save_path=self.setup_data["dcs_path"], flight=flight)
