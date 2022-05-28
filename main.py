@@ -6,8 +6,8 @@ import json
 
 from downloader import downloadLiveries
 from management import generatePaths
-from kneeboardWindow import KneeboardWindow
-from missionKneeboardWindow import MissionKneeboardWindow
+from windows.kneeboardWindow import KneeboardWindow
+from windows.missionKneeboardWindow import MissionKneeboardWindow
 
 root = tk.Tk()
 apps = []

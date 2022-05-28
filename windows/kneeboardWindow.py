@@ -7,8 +7,8 @@ import json
 import requests
 
 from downloader import downloadKneeboards
-from scrollFrame import ScrollFrame
-from toggleFrame import ToggledFrame
+from frames.scrollFrame import ScrollFrame
+from frames.toggleFrame import ToggledFrame
 
 
 class KneeboardWindow(tk.Frame):
