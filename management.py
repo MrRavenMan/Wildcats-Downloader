@@ -37,9 +37,7 @@ def generatePaths(management_path):
         # Loop through and get now deleted paths
         for current_path in current_paths:
             exist = os.path.exists(f"{management_path}{current_path['path']}") # Exist in management folder
-            print(f"{management_path}{current_path['path']}")
-            print( os.path.exists(f"{management_path}{current_path['path']}"))
-            print(exist)
+            print(f"Generating path for {current_path['path']}")
             if exist is False:
                 current_path["delete"] = True
                 paths.append(current_path)

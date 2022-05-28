@@ -4,7 +4,7 @@ from popup import Win
 
 
 def downloadLiveries(save_path: str, plane="all", download_management=False):
-    Win().popup("Alert", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download")
+    Win().popup("Download Liveries", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download. \n Please wait for download complete message, before doing anything \n\n Press OK to start download")
 
     SAVE_PATH = save_path
 
@@ -26,19 +26,23 @@ def downloadLiveries(save_path: str, plane="all", download_management=False):
             local_path["date"] = 0
             local_path["idx"] = idx
 
-            # if local_path["delete"] is True:
-            #     # DELETE FILE IF EXIST
-            #     return # do not add to local paths
+            if local_path["delete"] is True:
+                deleteLivery(f"{SAVE_PATH}{local_path['path']}")
+                continue # do not add to local paths
             local_paths.append(path)
 
     # Prepare and start download
     download = Download()
     for path in paths:
         # Find local path with corresponding ID
-        local_path = next(local_path for local_path in local_paths if local_path["id"] == path["id"])
+        local_path = None
+        for i, local_p in enumerate(local_paths):
+            if local_p["id"] == path["id"]:
+                local_path = local_p
         if path["delete"] is True:
             #DELETE AND REMOVE FROM local_path
-            print("DELETE")
+            deleteLivery(f"{SAVE_PATH}{path['path']}")
+            # local_paths.pop(i)
             continue
         
         if not download_management:
@@ -61,9 +65,13 @@ def downloadLiveries(save_path: str, plane="all", download_management=False):
             f.write(json.dumps(local_paths, indent=4))
         print("Livery download complete")
 
+def deleteLivery(path):
+    if os.path.isfile(path):
+        os.remove(path)
+        print(f"Deleted deprecated livery at {path}")
 
-def downloadKneeboards(save_path: str):
-    Win().popup("Alert", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download")
+def downloadKneeboards(save_path: str, download_all=False):
+    Win().popup("Download Kneeboards", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download. \n Please wait for download complete message, before doing anything \n\n Press OK to start download")
 
     SAVE_PATH = save_path
     download = Download()
@@ -75,13 +83,14 @@ def downloadKneeboards(save_path: str):
 
     for cat in kneeboards:
         for subcat in cat["subcat"]:
-            if subcat["default"]:
+            if subcat["default"] or download_all:
                 for file in subcat["files"]:
                     path = f"{cat['parent']}{file}"
                     download.addDownloadFile(url=f"https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master{path}",
                     save_path=f"{SAVE_PATH}{path}",
                     size=0)
     download.startDownload(disable_size=True)
+    print("Kneeboard download complete")
 
 
 def downloadMissionKneeboards(save_path: str, flight: str):
@@ -143,6 +152,7 @@ class Download:
 
                 self.DownloadFileDone(last, disable_size)
 
+        Win().popup("Message", "Download complete")
 
 class DownloadFile():
     def __init__(self, url, save_path, size):

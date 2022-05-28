@@ -4,10 +4,11 @@ from tkinter import filedialog, Text, StringVar
 import os
 import json
 
-from downloader import downloadLiveries
+from downloader import downloadKneeboards, downloadLiveries
 from management import generatePaths
 from windows.kneeboardWindow import KneeboardWindow
 from windows.missionKneeboardWindow import MissionKneeboardWindow
+from windows.kneeboardManagementWindow import KneeboardManagementWindow
 
 root = tk.Tk()
 apps = []
@@ -45,6 +46,7 @@ def createManagementFolder():
     management_folder_path = filedialog.askdirectory(initialdir="/", title="Select Management Folder")
     setup_data["management_folder_path"] = management_folder_path
     downloadLiveries(management_folder_path, plane="all", download_management=True)
+    downloadKneeboards(management_folder_path, download_all=True)
     saveSetupFile()
 
 def saveSetupFile():
@@ -58,9 +60,11 @@ def setPathLabel():
 def seeKneeboards():
     KneeboardWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
     
-
 def seeMissionKneeboards():
     MissionKneeboardWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
+
+def seeKneeboardManagement():
+    KneeboardManagementWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
 
 
 canvas = tk.Canvas(root, height=700, width=700, bg="#263D42")
@@ -90,17 +94,21 @@ setPathLabel()
 pathLbl = tk.Label(frame, textvariable=pathLblVar)
 pathLbl.pack()
 
-
-
+# Management Menu
 if setup_data["admin"]:
     lbl = tk.Label(frame, text="Management Buttons")
     lbl.pack()
     createManagementFolderBtn = tk.Button(frame, text="Generate Management Folder", padx=10, pady=5,
                 fg="white", bg="#263D42", command=createManagementFolder)
     createManagementFolderBtn.pack()
-    generatePathsBtn = tk.Button(frame, text="Select Management Folder", padx=10, pady=5,
-                fg="white", bg="#263D42", command=lambda: generatePaths(filedialog.askdirectory(initialdir="/", title="Select Management Folder")))
+
+    generatePathsBtn = tk.Button(frame, text="Generate Livery Paths", padx=10, pady=5,
+                fg="white", bg="#263D42", command=lambda: generatePaths(setup_data["management_folder_path"]))
     generatePathsBtn.pack()
+
+    manageKneeboardsBtn = tk.Button(frame, text="Manage Kneeboards", padx=10, pady=5,
+            fg="white", bg="#263D42", command=seeKneeboardManagement)
+    manageKneeboardsBtn.pack()
 
 
 
