@@ -41,6 +41,7 @@ class KneeboardWindow(tk.Frame):
         self.t_frames = []
         self.backBtn = None
         self.downloadBtn = None
+        self.desc1 = None
 
         self.generate_categories(root, frame, setup_data)
         self.place_t_frames()
@@ -77,14 +78,20 @@ class KneeboardWindow(tk.Frame):
     def generate_btns(self, frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
         self.downloadBtn = tk.Button(self.scrollFrame.viewPort, text="Download", command=self.download, bg="blue")
+        self.desc1 = tk.Label(self.scrollFrame.viewPort, text=f"*Press Download to download kneeboards from enabled kneeboard groups", 
+                                fg="#8C8C8C", bg="#202020")
+        self.desc1.config(font=('TkTextFont', 7))
+        
 
     def place_btns(self):
-        self.downloadBtn.pack(pady=(10, 5))
+        self.downloadBtn.pack(pady=(10, 0))
+        self.desc1.pack(pady=(1, 3))
         self.backBtn.pack(pady=(10, 5))
 
     def delete_btns(self):
         self.backBtn.destroy()
         self.downloadBtn.destroy()
+        self.desc1.destroy()
             
     def place_t_frames(self):
         for t in self.t_frames:

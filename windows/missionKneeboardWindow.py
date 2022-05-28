@@ -49,7 +49,17 @@ class MissionKneeboardWindow(tk.Frame):
                 flight_name = flight["flight_name"]
                 tk.Button(t.sub_frame, text="Download",
                 command=lambda flight_name=flight_name: self.download(flight_name),
-                bg="blue").pack(pady=5)
+                bg="blue").pack(pady=(12, 5))
+                tk.Button(t.sub_frame, text="Delete",
+                command=lambda flight_name=flight_name: self.download(flight_name, delete=True),
+                bg="red").pack(pady=5)
+
+                desc1 = tk.Label(t.sub_frame, text=f"*Press Download to download kneeboards for {flight_name} flight", fg="#8C8C8C")
+                desc1.config(font=('TkTextFont', 7))
+                desc1.pack(pady=(3, 0))
+                desc2 = tk.Label(t.sub_frame, text=f"*Press Delete to delete downloaded kneeboards for {flight_name} flight", fg="#8C8C8C")
+                desc2.config(font=('TkTextFont', 7))
+                desc2.pack(pady=(0, 3))
 
                 ttk.Label(t.sub_frame, text="").pack()
                 ttk.Separator(t.sub_frame, orient='horizontal').pack(fill='x', pady=(5, 5))
@@ -70,8 +80,8 @@ class MissionKneeboardWindow(tk.Frame):
         for t in self.t_frames:
             t.pack(fill="x", expand=1, pady=7, padx=40, anchor="n")
 
-    def download(self, flight):
-        downloadMissionKneeboards(save_path=self.setup_data["dcs_path"], flight=flight)
+    def download(self, flight, delete=False):
+        downloadMissionKneeboards(save_path=self.setup_data["dcs_path"], flight=flight, delete=delete)
         
     def back(self, frame):
         frame.place(relwidth=0.8, relheight=0.8, relx=0.1, rely=0.1)

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, Text, StringVar, ttk
+from tkinter import filedialog, Text, StringVar, ttk, PhotoImage
 
 import os
 import json
@@ -19,6 +19,8 @@ LOCAL_VERSION = 3
 pathLblVar = StringVar()
 
 root.title("Wildcats File Downloader")
+root.iconbitmap("C:/Users/Preda/Desktop/Coding/Wildcats/Wildcats Downloader/img/icon.ico")
+root.resizable(False, False)
 
 if os.path.isfile('setup.json'):
     with open('setup.json', 'r') as f:
@@ -84,6 +86,10 @@ frame.place(relwidth=0.8, relheight=0.8, relx=0.1, rely=0.1)
 title = tk.Label(frame, text="DCS Wildcats Downloader", fg='white', bg='#202020')
 title.config(font=('TkTextFont', 25))
 title.pack(pady=(0, 20))
+
+if not setup_data["admin"]:
+    img = PhotoImage(file="C:/Users/Preda/Desktop/Coding/Wildcats/Wildcats Downloader/img/profile-img.png")
+    tk.Label(frame, image=img, bg="#202020").pack()
 
 downloadLiveriesBtn = tk.Button(frame, text="Download Liveries", padx=10, pady=5,
              fg="#01EEFF", bg="#1D1D1D", command=lambda: downloadLiveries(setup_data["dcs_path"], plane="all"))

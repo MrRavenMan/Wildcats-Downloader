@@ -63,7 +63,7 @@ class MissionKneeboardManagementWindow(tk.Frame):
                 t.sub_frame.place()
             
             squadron_name = squadron["name"]
-            tk.Button(t, text="Delete Category",
+            tk.Button(t, text="Delete Squadron",
                 command=lambda squadron_name=squadron_name: self.delete_squadron(squadron_name, root, frame, setup_data),
                 bg="red").pack(pady=7)
             self.t_frames.append(t)
