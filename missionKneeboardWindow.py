@@ -6,7 +6,7 @@ import os
 import json
 import requests
 
-from downloader import downloadKneeboards
+from downloader import downloadMissionKneeboards
 from scrollFrame import ScrollFrame
 from toggleFrame import ToggledFrame
 
@@ -17,28 +17,15 @@ class MissionKneeboardWindow(tk.Frame):
         self.scrollFrame = ScrollFrame(self) # add a new scrollable frame.
         self.setup_data = setup_data       
 
-        paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/Kneeboards.json'
+        paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/eventFlights.json'
         response = requests.get(paths_url).text
-        self.kneeboards = json.loads(response)
-        if os.path.isfile('kneeboards.json'):
-            with open('kneeboards.json', 'r') as f:
-                old_kneeboards = json.load(f)
-            for i, cat in enumerate(self.kneeboards): # Transfer old kneeboard setup to new
-                for x, old_cat in enumerate(old_kneeboards):
-                    if self.kneeboards[i]["name"] == old_kneeboards[x]["name"]:
-                        for y, subcat in enumerate(self.kneeboards[i]["subcat"]):
-                            for z, old_subcat in enumerate(old_kneeboards[x]["subcat"]):
-                                if self.kneeboards[i]["subcat"][y]["name"] == old_kneeboards[x]["subcat"][z]["name"]:
-                                    self.kneeboards[i]["subcat"][y]["default"] = old_kneeboards[x]["subcat"][z]["default"]
-        with open('kneeboards.json', 'w') as f: # Save kneeboards.json locally
-            f.write(json.dumps(self.kneeboards, indent=4))
+        self.event_flights = json.loads(response)
 
         tk.Label(self.scrollFrame.viewPort, text="Mission Kneeboards").pack()
 
         frame.place_forget()
         self.t_frames = []
         self.backBtn = None
-        self.downloadBtn = None
 
         self.generate_categories(root, frame, setup_data)
         self.place_t_frames()
@@ -49,21 +36,15 @@ class MissionKneeboardWindow(tk.Frame):
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
     def generate_categories(self, root, frame, setup_data):
-        for category in self.kneeboards:
-            t = ToggledFrame(self.scrollFrame.viewPort, text=category["name"], relief="raised", borderwidth=1)
+        for squadron in self.event_flights:
+            t = ToggledFrame(self.scrollFrame.viewPort, text=squadron["name"], relief="raised", borderwidth=1)
 
-            for subcategory in category["subcat"]:
-                tk.Label(t.sub_frame, text=subcategory["name"]).pack()
-                tk.Label(t.sub_frame, text=subcategory["description"]).pack()
-                address = (category["name"], subcategory["name"])
-                if subcategory["default"]:
-                    tk.Button(t.sub_frame, text="Enabled",
-                    command=lambda address=address: self.toggleGroup(address, root, frame, setup_data),
-                    bg="green").pack()
-                elif not subcategory["default"]:
-                    tk.Button(t.sub_frame, text="Disabled",
-                    command=lambda address=address: self.toggleGroup(address, root, frame, setup_data),
-                    bg="red").pack()
+            for flight in squadron["flights"]:
+                tk.Label(t.sub_frame, text=flight["flight_name"]).pack()
+                tk.Button(t.sub_frame, text="Download",
+                command=lambda: self.download(flight["flight_name"]),
+                bg="blue").pack()
+
                 ttk.Label(t.sub_frame, text="").pack()
                 t.sub_frame.place()
             
@@ -71,24 +52,16 @@ class MissionKneeboardWindow(tk.Frame):
 
     def generate_btns(self, frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
-        self.downloadBtn = tk.Button(self.scrollFrame.viewPort, text="Download", command=self.download, bg="blue")
 
     def place_btns(self):
         self.backBtn.pack()
-        self.downloadBtn.pack()
     
     def delete_btns(self):
         self.backBtn.destroy()
-        self.downloadBtn.destroy()
             
     def place_t_frames(self):
         for t in self.t_frames:
             t.pack(fill="x", expand=1, pady=2, padx=2, anchor="n")
-
-    def delete_t_frames(self):
-        for t in self.t_frames:
-            t.destroy()
-        self.t_frames = []
 
     def toggleGroup(self, address, root, frame, setup_data):
         category_name, subcategory_name = address
@@ -103,9 +76,8 @@ class MissionKneeboardWindow(tk.Frame):
                     
         self.refresh(root, frame, setup_data)
 
-    def download(self):
-        downloadKneeboards(save_path=self.setup_data["dcs_path"])
-        self.refresh()
+    def download(self, flight):
+        downloadMissionKneeboards(save_path=self.setup_data["dcs_path"], flight=flight)
         
     def back(self, frame):
         frame.place(relwidth=0.8, relheight=0.8, relx=0.1, rely=0.1)

@@ -83,6 +83,25 @@ def downloadKneeboards(save_path: str):
                     size=0)
     download.startDownload(disable_size=True)
 
+
+def downloadMissionKneeboards(save_path: str, flight: str):
+    paths_url = f"https://api.github.com/repos/drumbart/VFA-27_Ready_Room/contents/eventKneeboards/{flight}"
+    response = requests.get(paths_url).text
+    flight_kneeboards = json.loads(response)
+
+    download = Download()
+    for kneeboard in flight_kneeboards:
+        download_url = f"https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/eventKneeboards/{flight}/{kneeboard['name']}"
+        size = int(kneeboard["size"])
+        save_path = save_path + "/Kneeboard/" + kneeboard["name"]
+        download.addDownloadFile(
+            url=download_url,
+            save_path=save_path,
+            size=size
+        )
+        print(save_path)
+    download.startDownload()
+
 class Download:
     def __init__(self):
         self.download_files = []
