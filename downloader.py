@@ -135,7 +135,7 @@ class Download:
             self.download_files = self.download_files[ : -1]
 
             if not disable_size:
-                print(f"{len(self.downloaded_files)} of {self.amount_to_download} files downloaded - {int(self.downloaded_size / 1000000)} MB of {int(self.download_size / 1000000)} MB downloaded")
+                print(f"{len(self.downloaded_files)} of {self.amount_to_download} files downloaded - {int(self.downloaded_size / 1000000)} mb of {int(self.download_size / 1000000)} mb downloaded")
             else:
                 print(f"{len(self.downloaded_files)} of {self.amount_to_download} files downloaded")
 
