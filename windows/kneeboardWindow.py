@@ -41,7 +41,9 @@ class KneeboardWindow(tk.Frame):
         self.t_frames = []
         self.backBtn = None
         self.downloadBtn = None
+        self.deleteBtn = None
         self.desc1 = None
+        self.desc2 = None
 
         self.generate_categories(root, frame, setup_data)
         self.place_t_frames()
@@ -78,9 +80,13 @@ class KneeboardWindow(tk.Frame):
     def generate_btns(self, frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
         self.downloadBtn = tk.Button(self.scrollFrame.viewPort, text="Download", command=self.download, bg="blue")
+        self.deleteBtn = tk.Button(self.scrollFrame.viewPort, text="Delete", command=self.delete, bg="red")
         self.desc1 = tk.Label(self.scrollFrame.viewPort, text=f"*Press Download to download kneeboards from enabled kneeboard groups", 
                                 fg="#8C8C8C", bg="#202020")
         self.desc1.config(font=('TkTextFont', 7))
+        self.des2 = tk.Label(self.scrollFrame.viewPort, text=f"*Press Delete to delete all downloaded Wildcats Kneeboards", 
+                                fg="#8C8C8C", bg="#202020")
+        self.desc2.config(font=('TkTextFont', 7))
         
 
     def place_btns(self):
@@ -117,6 +123,10 @@ class KneeboardWindow(tk.Frame):
 
     def download(self):
         downloadKneeboards(save_path=self.setup_data["dcs_path"])
+        self.refresh()
+
+    def delete(self):
+        downloadKneeboards(save_path=self.setup_data["dcs_path"], delete=True)
         self.refresh()
         
     def back(self, frame):

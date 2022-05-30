@@ -61,7 +61,7 @@ class KneeboardManagementWindow(tk.Frame):
             t = ToggledFrame(self.scrollFrame.viewPort, text=category["name"], relief="raised", borderwidth=1)
 
             # add New Subcategory Form
-            s_form_frame_title = tk.Label(t.sub_frame, text="Generate New Subcategory")
+            s_form_frame_title = tk.Label(t.sub_frame, text="Add New Subcategory")
             s_form_frame_title.config(font=('TkTextFont', 12))
             s_form_frame_title.pack(pady=10, padx=20)
             
@@ -121,7 +121,7 @@ class KneeboardManagementWindow(tk.Frame):
 
         # Add New Category Form
         self.form_frame = tk.Frame(self.scrollFrame.viewPort, bg="#505050")
-        form_frame_title = tk.Label(self.form_frame, text="Generate New Category", bg='#505050', fg='white')
+        form_frame_title = tk.Label(self.form_frame, text="Add New Category", bg='#505050', fg='white')
         form_frame_title.config(font=('TkTextFont', 15))
         form_frame_title.grid(row=0, column=0, columnspan=2, pady=10, padx=20)
 
@@ -179,7 +179,7 @@ class KneeboardManagementWindow(tk.Frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
         self.downloadBtn = tk.Button(self.scrollFrame.viewPort, text="Download", command=self.download, bg="blue")
 
-        self.editLbl = tk.Label(self.scrollFrame.viewPort, text="To rename or add new categories or subcategories, you are still to edit it in the file for now")
+        self.editLbl = tk.Label(self.scrollFrame.viewPort, text="To rename or change order of categories or subcategories, you are still to edit it in the file")
         self.editBtn = tk.Button(self.scrollFrame.viewPort, text="Edit", command=lambda: os.system(f"notepad.exe {self.kneeboards_json_path}"), bg="Gray")
 
     def place_btns(self):

@@ -70,7 +70,7 @@ def deleteLivery(path):
         os.remove(path)
         print(f"Deleted deprecated livery at {path}")
 
-def downloadKneeboards(save_path: str, download_all=False):
+def downloadKneeboards(save_path: str, download_all=False, delete=False):
     Win().popup("Download Kneeboards", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download. \n Please wait for download complete message, before doing anything \n\n Press OK to start download")
 
     SAVE_PATH = save_path
@@ -81,16 +81,24 @@ def downloadKneeboards(save_path: str, download_all=False):
     with open('kneeboards.json', 'r') as f:
         kneeboards = json.load(f)
 
-    for cat in kneeboards:
-        for subcat in cat["subcat"]:
-            if subcat["default"] or download_all:
+    if not delete:
+        for cat in kneeboards:
+            for subcat in cat["subcat"]:
+                if subcat["default"] or download_all:
+                    for file in subcat["files"]:
+                        path = f"{cat['parent']}{file}"
+                        download.addDownloadFile(url=f"https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master{path}",
+                        save_path=f"{SAVE_PATH}{path}",
+                        size=0)
+        download.startDownload(disable_size=True)
+        print("Kneeboard download complete")
+    elif delete:
+        for cat in kneeboards:
+            for subcat in cat["subcat"]:
                 for file in subcat["files"]:
-                    path = f"{cat['parent']}{file}"
-                    download.addDownloadFile(url=f"https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master{path}",
-                    save_path=f"{SAVE_PATH}{path}",
-                    size=0)
-    download.startDownload(disable_size=True)
-    print("Kneeboard download complete")
+                    p = f"{SAVE_PATH}{cat['parent']}{file}"
+                    if os.path.isfile(p):
+                        os.remove(p)
 
 
 def downloadMissionKneeboards(save_path: str, flight: str, delete=False):

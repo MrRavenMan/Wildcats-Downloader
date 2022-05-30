@@ -1,3 +1,4 @@
+import enum
 from re import I
 import tkinter as tk
 from tkinter import ttk
@@ -36,7 +37,10 @@ class MissionKneeboardManagementWindow(tk.Frame):
         frame.place_forget()
         self.t_frames = []
         self.backBtn = None
-
+        self.f_title_val = tk.StringVar()
+        self.form_frame = None  
+        self.flights_form_data = []
+        
         self.generate_categories(root, frame, setup_data)
         self.place_t_frames()
         self.generate_btns(frame)
@@ -46,8 +50,25 @@ class MissionKneeboardManagementWindow(tk.Frame):
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
     def generate_categories(self, root, frame, setup_data):
-        for squadron in self.event_flights:
+        for squadron_idx, squadron in enumerate(self.event_flights):
             t = ToggledFrame(self.scrollFrame.viewPort, text=squadron["name"], relief="raised", borderwidth=1)
+
+            # add New Flight Form
+            s_form_frame_title = tk.Label(t.sub_frame, text="Add New Flight")
+            s_form_frame_title.config(font=('TkTextFont', 12))
+            s_form_frame_title.pack(pady=10, padx=20)
+            
+            self.flights_form_data.append(tk.StringVar()) # name
+
+            s_f_title_lbl = tk.Label(t.sub_frame, text="Name:")
+            s_f_title_lbl.pack()
+            s_f_title = ttk.Entry(t.sub_frame, width=30, textvariable=self.flights_form_data[squadron_idx])
+            s_f_title.pack()
+
+            add_btn = tk.Button(t.sub_frame, text="Add Flight", command=lambda squadron_idx=squadron_idx: 
+                                    self.add_flight(squadron_idx, root, frame))
+            add_btn.pack(pady=10)
+            ttk.Separator(t.sub_frame, orient='horizontal').pack(fill='x')
 
             for flight in squadron["flights"]:
                 s_title = tk.Label(t.sub_frame, text=flight["flight_name"])
@@ -68,13 +89,55 @@ class MissionKneeboardManagementWindow(tk.Frame):
                 bg="red").pack(pady=7)
             self.t_frames.append(t)
 
+        # Add New Squadron Form
+        self.form_frame = tk.Frame(self.scrollFrame.viewPort, bg="#505050")
+        form_frame_title = tk.Label(self.form_frame, text="Add New Squadron", bg='#505050', fg='white')
+        form_frame_title.config(font=('TkTextFont', 15))
+        form_frame_title.grid(row=0, column=0, columnspan=2, pady=10, padx=20)
+
+        f_title_lbl = tk.Label(self.form_frame, text="Name:", bg='#505050', fg="white")
+        f_title_lbl.grid(row=1, column=0)
+        self.f_title = ttk.Entry(self.form_frame, width=30, textvariable=self.f_title_val)
+        self.f_title.grid(row=1, column=1)
+
+        add_btn = tk.Button(self.form_frame, text="Add Squadron", command=lambda: self.add_squadron(self.f_title_val, root, frame))
+        add_btn.grid(row=3, column=0, columnspan=2, pady=10)
+    
+    def add_squadron(self, name, root, frame):
+        # Clear the text box
+        cat = {
+            "name": name.get(),
+            "flights": []
+        }
+        
+        print(cat)
+        self.event_flights.append(cat)
+        with open(self.event_flights_json_path, 'w') as f: # Save eventFlights.json locally
+            f.write(json.dumps(self.event_flights, indent=4))
+
+        self.f_title_val.set("")
+        self.refresh(root, frame, self.setup_data)
+
+    def add_flight(self, squadron_idx, root, frame):
+        # Clear the text box
+        flight = {
+            "flight_name": self.flights_form_data[squadron_idx].get(),
+        }
+        
+        self.event_flights[squadron_idx]["flights"].append(flight)
+        with open(self.event_flights_json_path, 'w') as f: # Save eventFlights.json locally
+            f.write(json.dumps(self.event_flights, indent=4))
+        self.refresh(root, frame, self.setup_data)
+
     def generate_btns(self, frame):
         self.backBtn = tk.Button(self.scrollFrame.viewPort, text="Back", command=lambda: self.back(frame=frame), bg="gray")
 
     def place_btns(self):
+        self.form_frame.pack(pady=(15, 5))
         self.backBtn.pack(pady=(10, 5))
     
     def delete_btns(self):
+        self.form_frame.destroy()
         self.backBtn.destroy()
             
     def place_t_frames(self):
