@@ -14,7 +14,7 @@ from frames.scrollFrame import ScrollFrame
 from frames.toggleFrame import ToggledFrame
 
 
-class KneeboardManagementWindow(tk.Frame):
+class KneeboardManagementWindow(tk.Frame): # Frame/Window with funcitonality to manage kneeboard categories
     def __init__(self, root, frame, setup_data):
         tk.Frame.__init__(self, root)
         self.scrollFrame = ScrollFrame(self) # add a new scrollable frame.

@@ -1,7 +1,7 @@
 import tkinter as tk
 import platform
 
-class ScrollFrame(tk.Frame):
+class ScrollFrame(tk.Frame): # Frame with scroll functionality. Taken and edited from open source
     def __init__(self, parent):
         super().__init__(parent) # create a frame (self)
 

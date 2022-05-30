@@ -1,6 +1,6 @@
 import requests, json, uuid, os
 
-def generatePaths(management_path):
+def generatePaths(management_path): # function to generate paths.json file which is a file used for downloading liveries
     management_path = management_path
     paths = []
     for root, dirs, files in os.walk(f"{management_path}/Liveries"):
@@ -42,10 +42,10 @@ def generatePaths(management_path):
                 current_path["delete"] = True
                 paths.append(current_path)
             
-    with open(f'{management_path}/paths.json', 'w') as f:
+    with open(f'{management_path}/paths.json', 'w') as f: # save paths.json file in management folder
         f.write(json.dumps(paths, indent=4))
 
 
-def generatePathId():
+def generatePathId(): # generate ID for path
     id = str(uuid.uuid4())
     return id

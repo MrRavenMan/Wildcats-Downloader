@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import filedialog, Text, StringVar, ttk, PhotoImage
+from tkinter import filedialog, StringVar, ttk, PhotoImage
 
 import os
 import json
+import requests
 
 from downloader import downloadKneeboards, downloadLiveries
 from management import generatePaths
@@ -14,7 +15,7 @@ from windows.missionKneeboardManagementWindow import MissionKneeboardManagementW
 root = tk.Tk()
 apps = []
 
-LOCAL_VERSION = 3
+LOCAL_VERSION = 4
 
 pathLblVar = StringVar()
 
@@ -27,14 +28,12 @@ if os.path.isfile('setup.json'):
         setup_data = json.load(f)
 else: # Generate setup data
     setup_data = {
-        "firstTime": True,
         "admin": False,
         "local_ver": LOCAL_VERSION,
         "liveries_date": 0,
         "dcs_path": "",
         "management_folder_path": ""
     }
-
 
 
 def selectPath():
@@ -58,26 +57,33 @@ def saveSetupFile():
 
 def setPathLabel():
     if setup_data['dcs_path'] == "":
-        msg = "****Please select 'DCS Saved Games folder' as path before downloading anything!****"
+        msg = "****Please select 'DCS Saved Games folder' as path****"
     else:
         msg = f"Selected path: {setup_data['dcs_path']}"
     pathLblVar.set(msg)
 
 
-def seeKneeboards():
+def seeKneeboards(): # view kneeboardWindow
     KneeboardWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
     
-def seeMissionKneeboards():
+def seeMissionKneeboards(): # view missionKneeboardWindow
     MissionKneeboardWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
 
-def seeKneeboardManagement():
+def seeKneeboardManagement(): # view kneeboardManagementWindow
     KneeboardManagementWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
 
-def seeMissionKneeboardManagement():
+def seeMissionKneeboardManagement(): # view missionKneeboardManagementWindow 
     MissionKneeboardManagementWindow(root=canvas, frame=frame, setup_data=setup_data).pack(side="top", fill="both", expand=True)
 
+def openGuide(): # open guide for management of files for the downloader
+    guide_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/Wildcats Downloader Management Guide.pdf'
+    local_path = setup_data["management_folder_path"] + "/Guide.pdf"
+    response = requests.get(guide_url)
+    open(local_path, "wb").write(response.content)
+    os.system(f"start {local_path}")
 
-canvas = tk.Canvas(root, height=780, width=700, bg="#202020")
+# populate window with widgets
+canvas = tk.Canvas(root, height=800, width=700, bg="#202020")
 canvas.pack()
 
 frame = tk.Frame(root, bg="#202020")
@@ -87,36 +93,38 @@ title = tk.Label(frame, text="DCS Wildcats Downloader", fg='white', bg='#202020'
 title.config(font=('TkTextFont', 25))
 title.pack(pady=(0, 20))
 
+# check not admin and add image. Image cannot be added for admin users as there is not enough space for image and management buttons
 if not setup_data["admin"]:
     img = PhotoImage(file="C:/Users/Preda/Desktop/Coding/Wildcats/Wildcats Downloader/img/profile-img.png")
     tk.Label(frame, image=img, bg="#202020").pack()
 
-downloadLiveriesBtn = tk.Button(frame, text="Download Liveries", padx=10, pady=5,
-             fg="#01EEFF", bg="#1D1D1D", command=lambda: downloadLiveries(setup_data["dcs_path"], plane="all"))
-downloadLiveriesBtn.pack(pady=10)
+if setup_data['dcs_path'] != "": # add buttons for downloading if path is set
+    downloadLiveriesBtn = tk.Button(frame, text="Download Liveries", padx=10, pady=5,
+                fg="#01EEFF", bg="#1D1D1D", command=lambda: downloadLiveries(setup_data["dcs_path"], plane="all"))
+    downloadLiveriesBtn.pack(pady=10)
 
-kneeboardsBtn = tk.Button(frame, text="Kneeboards", padx=10, pady=5,
-             fg="#01EEFF", bg="#1D1D1D", command=seeKneeboards)
-kneeboardsBtn.pack(pady=10)
+    kneeboardsBtn = tk.Button(frame, text="Kneeboards", padx=10, pady=5,
+                fg="#01EEFF", bg="#1D1D1D", command=seeKneeboards)
+    kneeboardsBtn.pack(pady=10)
 
-missionKneeboardsBtn = tk.Button(frame, text="Mission Kneeboards", padx=10, pady=5,
-             fg="#01EEFF", bg="#1D1D1D", command=seeMissionKneeboards)
-missionKneeboardsBtn.pack(pady=10)
+    missionKneeboardsBtn = tk.Button(frame, text="Mission Kneeboards", padx=10, pady=5,
+                fg="#01EEFF", bg="#1D1D1D", command=seeMissionKneeboards)
+    missionKneeboardsBtn.pack(pady=10)
 
+# add button to select path and display path label
 selectPathBtn = tk.Button(frame, text="Select Path", padx=10, pady=5,
              fg="#01EEFF", bg="#202020", command=selectPath)
 selectPathBtn.pack(pady=10)
-
 setPathLabel()
 pathLbl = tk.Label(frame, textvariable=pathLblVar, fg='#FF9A00', bg='#1D1D1D')
 pathLbl.pack(pady=(15))
 
-# Management Menu
-if setup_data["admin"]:
+
+if setup_data["admin"]: # add management menu if admin is set to true
     ttk.Separator(frame, orient='horizontal').pack(fill='x', pady=10)
-    lbl = tk.Label(frame, text="Management Buttons", fg='#FF9A00', bg='#202020')
+    lbl = tk.Label(frame, text="Management", fg='#FF9A00', bg='#202020')
     lbl.config(font=('TkTextFont', 15))
-    lbl.pack(pady=(10))
+    lbl.pack(pady=(10, 5))
     createManagementFolderBtn = tk.Button(frame, text="Generate Management Folder", padx=10, pady=5,
                 fg="#FF9A00", bg="#1D1D1D", command=createManagementFolder)
     createManagementFolderBtn.pack(pady=10)
@@ -133,10 +141,13 @@ if setup_data["admin"]:
             fg="#FF9A00", bg="#1D1D1D", command=seeMissionKneeboardManagement)
     manageMissionKneeboardsBtn.pack(pady=10)
 
-
+    helpBtn = tk.Button(frame, text="Management Guide", padx=10, pady=5,
+            fg="white", bg="#1D1D1D", command=openGuide)
+    helpBtn.pack(pady=(10, 0))
 
 for app in apps:
     label = tk.Label(frame, text=app)
     label.pack()
 
+# run window
 root.mainloop()

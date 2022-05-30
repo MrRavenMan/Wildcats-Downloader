@@ -12,7 +12,7 @@ from frames.scrollFrame import ScrollFrame
 from frames.toggleFrame import ToggledFrame
 
 
-class MissionKneeboardManagementWindow(tk.Frame):
+class MissionKneeboardManagementWindow(tk.Frame): # Window/Frame to manage Mission/Event Kneeboards
     def __init__(self, root, frame, setup_data):
         tk.Frame.__init__(self, root)
         self.scrollFrame = ScrollFrame(self) # add a new scrollable frame.

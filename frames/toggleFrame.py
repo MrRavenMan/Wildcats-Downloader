@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class ToggledFrame(tk.Frame):
+class ToggledFrame(tk.Frame): # Frame with toggle functionality. Taken and edited from open source
 
     def __init__(self, parent, text="", *args, **options):
         tk.Frame.__init__(self, parent, *args, **options)
