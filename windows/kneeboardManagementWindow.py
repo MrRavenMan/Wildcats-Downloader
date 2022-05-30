@@ -103,7 +103,7 @@ class KneeboardManagementWindow(tk.Frame): # Frame/Window with funcitonality to 
                     listBox.insert(i + 1, file)
                 listBox.pack(pady=(0, 5))
 
-                tk.Button(t.sub_frame, text="selectFiles",
+                tk.Button(t.sub_frame, text="Select Files",
                     command=lambda address=address: self.selectFiles(address, root, frame, setup_data),
                     bg="gray").pack(pady=5)
                 tk.Button(t.sub_frame, text="Delete",

@@ -9,11 +9,9 @@ def downloadLiveries(save_path: str, plane="all", download_management=False):
     SAVE_PATH = save_path
 
     # Get paths file
-    # paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/paths.json'
-    # response = requests.get(paths_url).text
-    # paths = json.loads(response)
-    with open('paths.json', 'r') as f:
-        paths = json.load(f)
+    paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/paths.json'
+    response = requests.get(paths_url).text
+    paths = json.loads(response)
 
     # Load local paths file which is used to identify already downloaded liveries
     if os.path.isfile('local_paths.json'):
@@ -44,11 +42,17 @@ def downloadLiveries(save_path: str, plane="all", download_management=False):
             deleteLivery(f"{SAVE_PATH}{path['path']}")
             # local_paths.pop(i)
             continue
+        if local_path is None:
+            local_path = path
+            local_path["date"] = 0
+            local_path["idx"] = len(local_paths)
+            local_paths.append(local_path)
         
         if not download_management:
-            if local_path["date"] > path["date"] and os.path.exists(f"{SAVE_PATH}{path['path']}"):
-                continue # File is up to date
-            local_paths[local_path["idx"]]["date"] = int(time.time())
+            if local_path is not None:
+                if local_path["date"] > path["date"] and os.path.exists(f"{SAVE_PATH}{path['path']}"):
+                    continue # File is up to date
+                local_paths[local_path["idx"]]["date"] = int(time.time())
             download.addDownloadFile(url=f"https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master{path['path']}",
                         save_path=f"{SAVE_PATH}{path['path']}",
                         size=path['size'])
@@ -71,7 +75,8 @@ def deleteLivery(path):
         print(f"Deleted deprecated livery at {path}")
 
 def downloadKneeboards(save_path: str, download_all=False, delete=False):
-    Win().popup("Download Kneeboards", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download. \n Please wait for download complete message, before doing anything \n\n Press OK to start download")
+    if not delete:
+        Win().popup("Download Kneeboards", "I may time out during the download. That is okay. I am just working very hard. Please keep me alive during the download. \n Please wait for download complete message, before doing anything \n\n Press OK to start download")
 
     SAVE_PATH = save_path
     download = Download()

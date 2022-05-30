@@ -8,11 +8,9 @@ def generatePaths(management_path): # function to generate paths.json file which
             continue 
 
         # Get current paths
-        # paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/paths.json'
-        # response = requests.get(paths_url).text
-        # current_paths = json.loads(response)
-        with open('paths.json', 'r') as f:
-            current_paths = json.load(f)
+        paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/paths.json'
+        response = requests.get(paths_url).text
+        current_paths = json.loads(response)
 
         for file in files:
             file_path = f"{root}/{file}".replace('\\','/').replace(management_path, '')
@@ -34,13 +32,13 @@ def generatePaths(management_path): # function to generate paths.json file which
             }
             paths.append(path)
 
-        # Loop through and get now deleted paths
-        for current_path in current_paths:
-            exist = os.path.exists(f"{management_path}{current_path['path']}") # Exist in management folder
-            print(f"Generating path for {current_path['path']}")
-            if exist is False:
-                current_path["delete"] = True
-                paths.append(current_path)
+    # Loop through and get now deleted paths
+    for current_path in current_paths:
+        exist = os.path.exists(f"{management_path}{current_path['path']}") # Exist in management folder
+        print(f"Generating path for {current_path['path']}")
+        if exist is False:
+            current_path["delete"] = True
+            paths.append(current_path)
             
     with open(f'{management_path}/paths.json', 'w') as f: # save paths.json file in management folder
         f.write(json.dumps(paths, indent=4))
