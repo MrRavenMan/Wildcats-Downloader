@@ -81,8 +81,9 @@ def downloadKneeboards(save_path: str, download_all=False, delete=False):
     SAVE_PATH = save_path
     download = Download()
     if not os.path.isfile('kneeboards.json'):
-        print("Please make sure a kneeboards.json file is generated first!")
-        return
+        paths_url = 'https://raw.githubusercontent.com/drumbart/VFA-27_Ready_Room/master/Kneeboards.json'
+        response = requests.get(paths_url).text
+        kneeboards = json.loads(response)
     with open('kneeboards.json', 'r') as f:
         kneeboards = json.load(f)
 

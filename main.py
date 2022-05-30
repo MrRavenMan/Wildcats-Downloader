@@ -163,5 +163,5 @@ root.mainloop()
 
 
 # TO COMPILE
-# USE: pyinstaller --onefile main.py
+# USE: pyinstaller --onefile --name WildcatsDownloader main.py
 # To generate installer: USE NSIS
